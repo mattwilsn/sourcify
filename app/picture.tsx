@@ -85,9 +85,9 @@ export default function App() {
         <View style={styles.shutterContainer}>
           <Pressable onPress={toggleMode}>
             {mode === "picture" ? (
-              <AntDesign name="picture" size={32} color="black" />
+              <AntDesign name="picture" size={32} color="white" />
             ) : (
-              <Feather name="video" size={32} color="black" />
+              <Feather name="video" size={32} color="white" />
             )}
           </Pressable>
           <Pressable onPress={mode === "picture" ? takePicture : recordVideo}>
@@ -104,7 +104,7 @@ export default function App() {
                   style={[
                     styles.shutterBtnInner,
                     {
-                      backgroundColor: mode === "picture" ? "black" : "red",
+                      backgroundColor: mode === "picture" ? "white" : "red",
                     },
                   ]}
                 />
@@ -112,7 +112,7 @@ export default function App() {
             )}
           </Pressable>
           <Pressable onPress={toggleFacing}>
-            <FontAwesome6 name="rotate-left" size={32} color="black" />
+            <FontAwesome6 name="rotate-left" size={32} color="white" />
           </Pressable>
         </View>
       </CameraView>
