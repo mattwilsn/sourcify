@@ -1,29 +1,23 @@
-// app/login.tsx
+// app/register.tsx
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { useRouter, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const Login = () => {
+const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = () => {
-    // Simulate authentication logic (replace with your actual backend)
-    if (email === "test@example.com" && password === "password") {
-      // Successful login
-      Alert.alert("Success", "Login successful!");
-      router.push("/main"); // Navigate to the home tab
-    } else {
-      // Failed login
-      Alert.alert("Error", "Invalid credentials");
-    }
+  const handleRegister = () => {
+    // Simulate registration logic
+    Alert.alert("Success", "Registration successful!");
+    router.push("/login");
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Register</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -39,9 +33,9 @@ const Login = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
-      <Link href="/register" style={styles.registerLink}>
-        <Text>Register</Text>
+      <Button title="Register" onPress={handleRegister} />
+      <Link href="/login" style={styles.registerLink}>
+        <Text>Login</Text>
       </Link>
     </SafeAreaView>
   );
@@ -72,4 +66,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default Register;
