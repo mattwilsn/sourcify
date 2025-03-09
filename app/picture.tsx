@@ -10,7 +10,7 @@ import { Image } from "expo-image";
 import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
-
+import sendToAnthropic from "../services/anthropic";
 export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
   const ref = useRef<CameraView>(null);
@@ -34,10 +34,32 @@ export default function App() {
     );
   }
 
+  const processImage = async (imageData: string) => {
+    try {
+      await sendToAnthropic(imageData);
+    } catch (error) {
+      console.error("Error sending image to Anthropic:", error);
+    }
+  };
+
   const takePicture = async () => {
-    const photo = await ref.current?.takePictureAsync();
-    console.log(photo);
-    // setUri(photo?.uri);
+    console.log("Taking picture...");
+    const photo = await ref.current?.takePictureAsync({ base64: true });
+
+    if (!photo?.base64) {
+      console.error(
+        "Error: Failed to capture image or base64 data is missing."
+      );
+      alert("Failed to capture image.");
+      return;
+    }
+
+    try {
+      await sendToAnthropic(photo.base64); // Now TypeScript is sure `photo.base64` is a string
+    } catch (error) {
+      alert("Failed to send image.");
+      console.error(error);
+    }
   };
 
   const recordVideo = async () => {
