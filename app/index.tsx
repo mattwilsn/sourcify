@@ -3,22 +3,37 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { apiRequest } from "../services/http";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = () => {
-    // Simulate authentication logic (replace with your actual backend)
-    if (email === "test@example.com" && password === "password") {
-      // Successful login
-      Alert.alert("Success", "Login successful!");
-      router.push("/main"); // Navigate to the home tab
-    } else {
-      // Failed login
-      Alert.alert("Error", "Invalid credentials");
+  const handleLogin = async () => {
+    try {
+      const response = await apiRequest<{ AccessToken: string }>({
+        path: "https://t7b79ywcmk.execute-api.us-east-1.amazonaws.com/dev/auth",
+        method: "POST",
+        body: { username: email, password: password },
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.AccessToken) {
+        router.push("/main");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
     }
+    // // Simulate authentication logic (replace with your actual backend)
+    // if (email === "test@example.com" && password === "password") {
+    //   // Successful login
+    //   Alert.alert("Success", "Login successful!");
+    //   router.push("/main"); // Navigate to the home tab
+    // } else {
+    //   // Failed login
+    //   Alert.alert("Error", "Invalid credentials");
+    // }
   };
 
   return (

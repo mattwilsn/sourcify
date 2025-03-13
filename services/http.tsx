@@ -18,7 +18,7 @@ export async function apiRequest<T>({
       method,
       headers: {
         "Content-Type": "application/json",
-        ...headers, // Merge with default headers
+        ...headers, // Merge with custom headers
       },
       body: body ? JSON.stringify(body) : undefined,
     });
@@ -27,8 +27,16 @@ export async function apiRequest<T>({
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    return (await response.json()) as T; // Ensure the response is typed
+    // Ensure response is parsed correctly (handle empty responses)
+    const responseText = await response.text();
+    const jsonResponse: T = responseText ? JSON.parse(responseText) : ({} as T);
+
+    return jsonResponse;
   } catch (error) {
+    console.log("Request Path:", path);
+    console.log("Method:", method);
+    console.log("Request Body:", body);
+    console.log("Request Headers:", headers);
     console.error("API Request Error:", error);
     throw error; // Propagate the error
   }
