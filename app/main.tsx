@@ -9,7 +9,7 @@ export default function TabTwoScreen() {
       <Text style={styles.title}>sorcely</Text>
       <Link style={{ marginHorizontal: "auto" }} href="/picture" asChild>
         <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Take Pc</Text>
+          <Text style={styles.buttonText}>Scan Tag</Text>
         </Pressable>
       </Link>
       <View

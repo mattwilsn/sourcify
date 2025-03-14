@@ -6,6 +6,7 @@ const anthropic = new Anthropic({
 });
 
 async function sendToAnthropic(imageData: string) {
+  console.log("sending to Anthropic");
   const message = await anthropic.messages.create({
     model: "claude-3-7-sonnet-20250219",
     max_tokens: 1024,
@@ -23,15 +24,14 @@ async function sendToAnthropic(imageData: string) {
           },
           {
             type: "text",
-            text: "What is the sku and name of this image",
+            text: "Return the name and sku of this fabric in that order. Do not return the manufacture of vendor.  Lowercase and no spaces between the the words. Do not return anything else in your response",
           },
         ],
       },
     ],
   });
-
+  // console.log(message);
   return message;
-  console.log(message);
 }
 
 export default sendToAnthropic;

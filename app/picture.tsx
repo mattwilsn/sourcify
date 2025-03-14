@@ -3,6 +3,7 @@ import {
   CameraType,
   CameraView,
   useCameraPermissions,
+  CameraCapturedPicture,
 } from "expo-camera";
 import { useRef, useState } from "react";
 import { Button, Pressable, StyleSheet, Text, View } from "react-native";
@@ -11,7 +12,10 @@ import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import sendToAnthropic from "../services/anthropic";
-export default function App() {
+import * as FileSystem from "expo-file-system";
+import { apiRequest } from "../services/http";
+
+export default function Picture() {
   const [permission, requestPermission] = useCameraPermissions();
   const ref = useRef<CameraView>(null);
   const [uri, setUri] = useState<string | null>(null);
@@ -34,9 +38,25 @@ export default function App() {
     );
   }
 
+  const isTest = true;
+
+  const convertImageToBase64 = async (imageUri: string) => {
+    try {
+      const base64String = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      // console.log("Base64 String:", base64String);
+      return base64String;
+    } catch (error) {
+      console.error("Error converting image to base64:", error);
+      return null;
+    }
+  };
+
   const processImage = async (imageData: string) => {
     try {
-      await sendToAnthropic(imageData);
+      const response = await sendToAnthropic(imageData);
+      return response;
     } catch (error) {
       console.error("Error sending image to Anthropic:", error);
     }
@@ -44,21 +64,48 @@ export default function App() {
 
   const takePicture = async () => {
     console.log("Taking picture...");
-    const photo = await ref.current?.takePictureAsync({ base64: true });
+    let photo: CameraCapturedPicture | undefined; // Update type
 
-    if (!photo?.base64) {
-      console.error(
-        "Error: Failed to capture image or base64 data is missing."
-      );
-      alert("Failed to capture image.");
-      return;
+    if (isTest) {
+      const imagePath =
+        "/Users/matthew/Documents/Matt/code/sourcify/test/pictures/peterfrano01.jpg";
+      const data = await convertImageToBase64(imagePath);
+      if (data) {
+        const response = await processImage(data);
+        console.log(response);
+        const content: any = response?.content[0];
+        console.log(content);
+        const output = content.text;
+      }
+    } else {
+      console.log("isNotTest");
+      photo = await ref.current?.takePictureAsync({ base64: true });
+      const data = photo?.base64;
+
+      if (data) {
+        await processImage(data);
+      }
+
+      if (!data) {
+        console.error(
+          "Error: Failed to capture image or base64 data is missing."
+        );
+        alert("Failed to capture image.");
+        return;
+      }
     }
+  };
 
+  const getItem = async (itemData: string) => {
     try {
-      await sendToAnthropic(photo.base64); // Now TypeScript is sure `photo.base64` is a string
+      const response = await apiRequest<{ AccessToken: string }>({
+        path: "https://t7b79ywcmk.execute-api.us-east-1.amazonaws.com/dev/auth",
+        method: "GET",
+        body: {},
+        headers: { "Content-Type": "application/json" },
+      });
     } catch (error) {
-      alert("Failed to send image.");
-      console.error(error);
+      console.error("Login failed:", error);
     }
   };
 
