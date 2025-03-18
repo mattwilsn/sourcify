@@ -28,12 +28,16 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",["expo-media-library",
-    {
-      "photosPermission":"Allow $(PRODUCT_NAME) to access your photos.",
-      "savePhotosPermission":"Allow $(PRODUCT_NAME) to save your photos.",
-      "isAccessMediaLocationEnabled":"true"
-    }]
+      "expo-router",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save your photos.",
+          "isAccessMediaLocationEnabled": "true"
+        }
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

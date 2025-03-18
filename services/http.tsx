@@ -1,3 +1,5 @@
+import { getToken } from "../services/token";
+
 type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 interface RequestOptions {
@@ -14,6 +16,10 @@ export async function apiRequest<T>({
   headers,
 }: RequestOptions): Promise<T> {
   try {
+    if ((await getToken()) && headers) {
+      headers["Authorization"] = "Bearer " + getToken();
+    }
+
     const response = await fetch(path, {
       method,
       headers: {

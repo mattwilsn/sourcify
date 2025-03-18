@@ -4,6 +4,7 @@ import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { apiRequest } from "../services/http";
+import { storeToken } from "../services/token";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -20,6 +21,7 @@ const Login = () => {
       });
 
       if (response.AccessToken) {
+        storeToken(response.AccessToken);
         router.push("/main");
       }
     } catch (error) {
