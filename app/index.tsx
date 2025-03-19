@@ -4,7 +4,8 @@ import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { apiRequest } from "../services/http";
-import { storeToken } from "../services/token";
+import { storeToken, getToken } from "../services/token";
+import * as SecureStore from "expo-secure-store";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,15 +14,30 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await apiRequest<{ AccessToken: string }>({
+      const response = await apiRequest<{
+        AccessToken: string;
+        AnthropicKey: string;
+      }>({
         path: "https://t7b79ywcmk.execute-api.us-east-1.amazonaws.com/dev/auth",
         method: "POST",
         body: { username: email, password: password },
         headers: { "Content-Type": "application/json" },
       });
 
+      console.log(response.AnthropicKey);
+
       if (response.AccessToken) {
-        storeToken(response.AccessToken);
+        storeToken("authToken", response.AccessToken);
+        storeToken("anthropicKey", response.AnthropicKey);
+
+        await SecureStore.setItemAsync("anthropicKey", response.AnthropicKey);
+        const testValue = await SecureStore.getItemAsync("anthropicKey");
+        console.log("Retrieved Value:", testValue);
+
+        // const token = await SecureStore.getItemAsync("anthropicKey");
+        // const tokena = await SecureStore.getItemAsync("authToken");
+        // console.log(token);
+        // console.log(tokena);
         router.push("/main");
       }
     } catch (error) {

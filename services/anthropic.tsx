@@ -1,12 +1,17 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { getToken } from "../services/token";
 
-const anthropic = new Anthropic({
-  //   apiKey: process.env.ANTHROPIC_API_KEY,
-  apiKey: "",
-});
+async function createAnthropicClient() {
+  const apiKey = await getToken("anthropicKey");
+  if (!apiKey) throw new Error("Anthropic API key is missing");
+  return new Anthropic({ apiKey });
+}
 
 async function sendToAnthropic(imageData: string) {
   console.log("sending to Anthropic");
+
+  const anthropic = await createAnthropicClient(); // Wait for API key retrieval
+
   const message = await anthropic.messages.create({
     model: "claude-3-7-sonnet-20250219",
     max_tokens: 1024,
@@ -24,13 +29,13 @@ async function sendToAnthropic(imageData: string) {
           },
           {
             type: "text",
-            text: "Return the name and sku of this fabric in that order. Do not return the manufacture of vendor.  Lowercase and no spaces between the the words. Do not return anything else in your response",
+            text: "Return the name and sku of this fabric in that order. Do not return the manufacture of vendor. Lowercase and no spaces between the words. Do not return anything else in your response.",
           },
         ],
       },
     ],
   });
-  // console.log(message);
+
   return message;
 }
 

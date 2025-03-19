@@ -16,8 +16,8 @@ export async function apiRequest<T>({
   headers,
 }: RequestOptions): Promise<T> {
   try {
-    if ((await getToken()) && headers) {
-      headers["Authorization"] = "Bearer " + getToken();
+    if ((await getToken("authToken")) && headers) {
+      headers["Authorization"] = "Bearer " + getToken("authToken");
     }
 
     const response = await fetch(path, {
